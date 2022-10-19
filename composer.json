@@ -1,0 +1,22 @@
+{
+  "name": "gmllt/event-http-client",
+  "description": "HttpClient with events",
+  "type": "library",
+  "autoload": {
+    "psr-4": {
+      "Gmllt\\EventHttpClient\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Gmllt",
+      "email": "g.miraillet@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=8.0",
+    "symfony/http-client-contracts": "^3.1",
+    "psr/event-dispatcher": "^1.0",
+    "symfony/event-dispatcher-contracts": "^3.1"
+  }
+}
