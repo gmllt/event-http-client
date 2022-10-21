@@ -16,7 +16,6 @@
   "require": {
     "php": ">=8.0",
     "symfony/http-client-contracts": "^3.1",
-    "psr/event-dispatcher": "^1.0",
-    "symfony/event-dispatcher-contracts": "^3.1"
+    "psr/event-dispatcher": "^1.0"
   }
 }

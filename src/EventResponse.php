@@ -3,7 +3,7 @@
 /**
  * This file is part of the gmllt/event-http-client package.
  *
- * (c) Gilles Miraillet <g.miraillet@gmail.com>
+ * (c) Gilles MIRAILLET <g.miraillet@gmail.com>
  *
  * For full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -18,20 +18,24 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
 /**
- * @author Gilles Miraillet <g.miraillet@gmail.com>
+ * @author Gilles MIRAILLET <g.miraillet@gmail.com>
  */
-class Response implements ResponseInterface
+class EventResponse implements ResponseInterface
 {
+    /**
+     * @param ResponseInterface $response
+     * @param EventDispatcherInterface[] $dispatchers
+     */
     public function __construct(
         protected ResponseInterface $response,
-        protected EventDispatcherInterface $dispatcher
+        protected array $dispatchers = []
     ) {
-        $this->dispatcher->dispatch(new CreatedRequestEventAbstract($this->response));
+        $this->dispatch(new CreatedRequestEventAbstract($this->response));
     }
 
     public function cancel(): void
     {
-        $this->dispatcher->dispatch(new CanceledRequestEventAbstract($this->response));
+        $this->dispatch(new CanceledRequestEventAbstract($this->response));
         $this->response->cancel();
     }
 
@@ -42,25 +46,32 @@ class Response implements ResponseInterface
 
     public function getStatusCode(): int
     {
-        $this->dispatcher->dispatch(new AnsweredRequestEvent($this->response));
+        $this->dispatch(new AnsweredRequestEvent($this->response));
         return $this->response->getStatusCode();
     }
 
     public function getHeaders(bool $throw = true): array
     {
-        $this->dispatcher->dispatch(new AnsweredRequestEvent($this->response));
+        $this->dispatch(new AnsweredRequestEvent($this->response));
         return $this->response->getHeaders($throw);
     }
 
     public function getContent(bool $throw = true): string
     {
-        $this->dispatcher->dispatch(new AnsweredRequestEvent($this->response));
+        $this->dispatch(new AnsweredRequestEvent($this->response));
         return $this->response->getContent($throw);
     }
 
     public function toArray(bool $throw = true): array
     {
-        $this->dispatcher->dispatch(new AnsweredRequestEvent($this->response));
+        $this->dispatch(new AnsweredRequestEvent($this->response));
         return $this->response->toArray($throw);
+    }
+
+    protected function dispatch(object $event): void
+    {
+        foreach ($this->dispatchers as $dispatcher) {
+            $dispatcher->dispatch($event);
+        }
     }
 }
